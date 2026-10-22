@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Medicine Prediction App - Home{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-body">
+        <h1 class="card-title text-center">Medicine Prediction App</h1>
+        <p class="lead text-center">AI-powered medicine prediction and analysis</p>
+        
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h3 class="card-title">Medicine Uses</h3>
+                        <p class="card-text">Predict potential therapeutic uses of medicines based on name and composition.</p>
+                        <p class="card-text">
+                            <span class="badge {% if model_status.use %}bg-success{% else %}bg-danger{% endif %}">
+                                Model: {% if model_status.use %}Available{% else %}Not Found{% endif %}
+                            </span>
+                        </p>
+                        <a href="{{ url_for('medicine_use') }}" class="btn btn-primary">Go to Medicine Uses</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h3 class="card-title">Side Effects</h3>
+                        <p class="card-text">Predict potential side effects of medicines based on their properties.</p>
+                        <p class="card-text">
+                            <span class="badge {% if model_status.side_effect %}bg-success{% else %}bg-danger{% endif %}">
+                                Model: {% if model_status.side_effect %}Available{% else %}Not Found{% endif %}
+                            </span>
+                        </p>
+                        <a href="{{ url_for('side_effect') }}" class="btn btn-primary">Go to Side Effects</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h3 class="card-title">Drug Repurposing</h3>
+                        <p class="card-text">Predict new therapeutic applications for existing drugs.</p>
+                        <p class="card-text">
+                            <span class="badge {% if model_status.repurposing %}bg-success{% else %}bg-danger{% endif %}">
+                                Model: {% if model_status.repurposing %}Available{% else %}Not Found{% endif %}
+                            </span>
+                        </p>
+                        <a href="{{ url_for('repurposing') }}" class="btn btn-primary">Go to Drug Repurposing</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h3 class="card-title">About the App</h3>
+        <p>This application combines multiple AI models for medicine analysis:</p>
+        <ul>
+            <li><strong>Medicine Use Predictor:</strong> Identifies potential therapeutic applications of medicines based on their name and composition.</li>
+            <li><strong>Side Effect Predictor:</strong> Predicts potential side effects that might occur with a given medicine.</li>
+            <li><strong>Drug Repurposing Predictor:</strong> Discovers new therapeutic uses for existing drugs, potentially shortening drug development timelines.</li>
+        </ul>
+        <p>All predictions are based on machine learning models trained on comprehensive medicine datasets. The accuracy of predictions depends on the quality of the training data and the specific model parameters.</p>
+    </div>
+</div>
+{% endblock %}

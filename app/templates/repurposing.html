@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Drug Repurposing Prediction{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-body">
+        <h1 class="card-title">Drug Repurposing Prediction</h1>
+        <p class="lead">Discover new potential therapeutic uses for existing drugs</p>
+        
+        <form method="POST" action="{{ url_for('repurposing') }}" class="mt-4">
+            <div class="mb-3">
+                <label for="drug_name" class="form-label">Drug Name</label>
+                <input type="text" class="form-control" id="drug_name" name="drug_name" 
+                       placeholder="Enter drug name" value="{{ drug_name if drug_name else '' }}" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="chemical_structure" class="form-label">SMILES Chemical Structure</label>
+                <input type="text" class="form-control" id="chemical_structure" name="chemical_structure" 
+                       placeholder="Enter SMILES notation (leave empty for example)" 
+                       value="{{ chemical_structure if chemical_structure else '' }}">
+                <div class="form-text">Example: CC(=O)OC1=CC=CC=C1C(=O)O (Aspirin)</div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="mol_weight" class="form-label">Molecular Weight</label>
+                    <input type="number" step="0.01" class="form-control" id="mol_weight" name="mol_weight" 
+                           value="{{ molecular_features.molecular_weight if molecular_features else 300 }}">
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label for="h_donors" class="form-label">H-Donors</label>
+                    <input type="number" class="form-control" id="h_donors" name="h_donors" 
+                           value="{{ molecular_features.h_donors if molecular_features else 2 }}">
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label for="h_acceptors" class="form-label">H-Acceptors</label>
+                    <input type="number" class="form-control" id="h_acceptors" name="h_acceptors" 
+                           value="{{ molecular_features.h_acceptors if molecular_features else 4 }}">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="rot_bonds" class="form-label">Rotatable Bonds</label>
+                    <input type="number" class="form-control" id="rot_bonds" name="rot_bonds" 
+                           value="{{ molecular_features.rotatable_bonds if molecular_features else 3 }}">
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="logp" class="form-label">LogP</label>
+                    <input type="number" step="0.1" class="form-control" id="logp" name="logp" 
+                           value="{{ molecular_features.logp if molecular_features else 2.5 }}">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="confidence" class="form-label">Confidence Threshold (0.0-1.0)</label>
+                    <input type="number" step="0.01" min="0" max="1" class="form-control" id="confidence" name="confidence" 
+                           value="{{ confidence if confidence else 0.2 }}">
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="top_n" class="form-label">Number of Top Predictions</label>
+                    <input type="number" min="1" max="20" class="form-control" id="top_n" name="top_n" 
+                           value="{{ top_n if top_n else 5 }}">
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Predict New Uses</button>
+        </form>
+    </div>
+</div>
+
+{% if predictions is defined %}
+<div class="card">
+    <div class="card-header bg-info text-white">
+        <h3 class="mb-0">Repurposing Prediction Results</h3>
+    </div>
+    <div class="card-body">
+        <h4>Predicted Therapeutic Uses for {{ drug_name }}</h4>
+        
+        {% if predictions %}
+            <table class="table table-striped mt-3">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Condition/Use</th>
+                        <th>Confidence</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for condition, probability in predictions %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ condition }}</td>
+                            <td>{{ "%.2f"|format(probability*100) }}%</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="alert alert-info">
+                No potential therapeutic uses predicted for this drug.
+            </div>
+        {% endif %}
+        
+        <div class="alert alert-warning mt-3">
+            <strong>Disclaimer:</strong> These predictions are generated by an AI model and should be considered as hypotheses for further testing, not as definitive results. Additional research and clinical trials would be necessary to validate these predictions.
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

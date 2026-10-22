@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Evaluate {{ model_type.capitalize() }} Model{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Evaluate {{ model_type.capitalize() }} Model</h1>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Start Evaluation</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="evaluation-form" action="{{ url_for('evaluate_model', model_type=model_type) }}">
+                        <p class="mb-3">Click the button below to evaluate the {{ model_type }} model against test data.</p>
+                        
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary" id="evaluate-btn">
+                                <span id="spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                <span id="btn-text">Evaluate Model</span>
+                            </button>
+                            
+                            <a href="/" class="btn btn-secondary">Back to Home</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Model Status</h5>
+                </div>
+                <div class="card-body">
+                    <div id="status-container">
+                        {% if metrics %}
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle"></i> Evaluation complete!
+                            </div>
+                        {% else %}
+                            <div class="alert alert-secondary">
+                                <i class="fas fa-info-circle"></i> No evaluation data available yet.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if plots and plots.training_progress %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Training Progress</h5>
+                </div>
+                <div class="card-body text-center">
+                    <img src="data:image/png;base64,{{ plots.training_progress }}" class="img-fluid" alt="Training Progress Graph">
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if metrics %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card" id="metrics-card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Evaluation Metrics</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for metric, value in metrics.items() %}
+                            <tr>
+                                <td>{{ metric }}</td>
+                                <td>
+                                    {% if value is number %}
+                                        {{ "%.4f"|format(value) }}
+                                    {% else %}
+                                        {{ value }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('evaluation-form');
+    const spinner = document.getElementById('spinner');
+    const btnText = document.getElementById('btn-text');
+    const evaluateBtn = document.getElementById('evaluate-btn');
+    const statusContainer = document.getElementById('status-container');
+    
+    // Clear any previous evaluation timeout
+    if (window.evaluationTimeout) {
+        clearTimeout(window.evaluationTimeout);
+    }
+    
+    // Add a timestamp parameter to prevent caching
+    form.addEventListener('submit', function(e) {
+        // Add a timestamp to the form action to prevent caching
+        const timestamp = new Date().getTime();
+        const currentAction = form.getAttribute('action');
+        const separator = currentAction.includes('?') ? '&' : '?';
+        form.setAttribute('action', `${currentAction}${separator}timestamp=${timestamp}`);
+        
+        // Show loading indicators
+        spinner.classList.remove('d-none');
+        btnText.textContent = 'Evaluating...';
+        evaluateBtn.disabled = true;
+        
+        // Update status
+        statusContainer.innerHTML = `
+            <div class="alert alert-warning">
+                <i class="fas fa-sync fa-spin"></i> Evaluation in progress... This might take a moment.
+            </div>
+        `;
+        
+        // Set a timeout for long-running evaluations (30 seconds)
+        window.evaluationTimeout = setTimeout(function() {
+            // Only show if the button is still disabled (evaluation still running)
+            if (evaluateBtn.disabled) {
+                statusContainer.innerHTML += `
+                    <div class="alert alert-info mt-2">
+                        <i class="fas fa-info-circle"></i> The evaluation is taking longer than expected. 
+                        If this continues, you may need to refresh the page.
+                    </div>
+                `;
+                
+                // Enable the button after a certain timeout (60 seconds)
+                setTimeout(function() {
+                    spinner.classList.add('d-none');
+                    btnText.textContent = 'Try Again';
+                    evaluateBtn.disabled = false;
+                    
+                    statusContainer.innerHTML += `
+                        <div class="alert alert-danger mt-2">
+                            <i class="fas fa-exclamation-triangle"></i> The evaluation may have timed out.
+                            Please try again or check server logs for errors.
+                        </div>
+                    `;
+                }, 30000); // Additional 30 seconds (60 seconds total)
+            }
+        }, 30000); // 30 seconds
+    });
+    
+    // Check if we just completed an evaluation (after form submission)
+    {% if metrics %}
+    if (window.performance && window.performance.navigation.type == window.performance.navigation.TYPE_NAVIGATE) {
+        // Add a highlight effect to the metrics section
+        const metricsCard = document.getElementById('metrics-card');
+        if (metricsCard) {
+            metricsCard.classList.add('evaluation-highlight');
+        }
+    }
+    {% endif %}
+});
+</script>
+
+<style>
+.evaluation-highlight {
+    animation: highlight-pulse 2s ease-out;
+}
+
+@keyframes highlight-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(0, 123, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); }
+}
+</style>
+{% endblock %}

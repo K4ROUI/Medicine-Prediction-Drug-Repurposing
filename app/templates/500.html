@@ -1,0 +1,16 @@
+<!-- templates/500.html -->
+{% extends "base.html" %}
+
+{% block title %}Server Error{% endblock %}
+
+{% block content %}
+<div class="card text-center">
+    <div class="card-header bg-danger text-white">
+        <h1>500 - Server Error</h1>
+    </div>
+    <div class="card-body">
+        <p class="lead">Something went wrong on our end. Please try again later.</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Return to Home</a>
+    </div>
+</div>
+{% endblock %}

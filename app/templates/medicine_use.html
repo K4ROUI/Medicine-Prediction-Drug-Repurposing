@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Medicine Use Prediction{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-body">
+        <h1 class="card-title">Medicine Use Prediction</h1>
+        <p class="lead">Predict potential therapeutic uses for medicines</p>
+        
+        <form method="POST" action="{{ url_for('medicine_use') }}" class="mt-4">
+            <div class="mb-3">
+                <label for="medicine_name" class="form-label">Medicine Name</label>
+                <input type="text" class="form-control" id="medicine_name" name="medicine_name" 
+                       placeholder="Enter medicine name" value="{{ medicine_name if medicine_name else '' }}" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="composition" class="form-label">Composition</label>
+                <textarea class="form-control" id="composition" name="composition" rows="3" 
+                          placeholder="Enter medicine composition (e.g., active ingredients)">{{ composition if composition else '' }}</textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Predict Uses</button>
+        </form>
+    </div>
+</div>
+
+{% if predicted_uses is defined %}
+<div class="card">
+    <div class="card-header bg-success text-white">
+        <h3 class="mb-0">Prediction Results</h3>
+    </div>
+    <div class="card-body">
+        <h4>Predicted Uses for {{ medicine_name }}</h4>
+        
+        {% if predicted_uses %}
+    <ul class="list-group mt-3">
+        {% for i in range(predicted_uses | length) %}
+            <li class="list-group-item">
+                {{ predicted_uses[i] }}
+                {% if translated_uses and translated_uses[i] %}
+                    <br><small class="text-muted">→ {{ translated_uses[i] }}</small>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+        {% else %}
+            <div class="alert alert-info">
+                No specific uses predicted for this medicine.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}
