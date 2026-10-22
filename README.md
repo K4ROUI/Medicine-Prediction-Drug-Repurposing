@@ -21,6 +21,32 @@ Alongside prediction, the application includes fuzzy search, medicine-to-drug
 relationships, molecular clustering, and evaluation pages with reusable
 figures generated from the project datasets.
 
+### Why this project matters
+
+Drug discovery is expensive, slow, and highly exploratory. Researchers often
+need to compare many compounds, indications, and safety signals before deciding
+which ideas deserve deeper laboratory or clinical investigation. This project
+demonstrates how a single, accessible research tool can help organize that
+early exploration:
+
+- **Faster hypothesis generation:** rapidly surface candidate medicine uses and
+  repurposing directions for follow-up research.
+- **Safer early investigation:** make potential side-effect patterns visible as
+  questions for pharmacovigilance teams, not as a replacement for safety
+  review.
+- **Reuse of existing knowledge:** explore whether an already studied drug
+  might have another promising application.
+- **Accessible analysis:** provide a browser interface for students,
+  researchers, and developers who may not want to work directly with model
+  scripts.
+- **Reproducible experimentation:** keep the models, processed data,
+  evaluation figures, and application code together in one repository.
+
+The practical value is therefore in prioritizing and communicating ideas. The
+system can help narrow a large search space, but every promising result still
+requires domain review, experimental validation, toxicity assessment, clinical
+trials, and regulatory approval.
+
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-3.x-000000?logo=flask&logoColor=white)
 ![Status](https://img.shields.io/badge/status-research%20demo-c46645)
@@ -70,6 +96,46 @@ repurposing model returns possible alternative therapeutic applications.
 - Side-effect search
 - Molecular-property clustering
 - Model evaluation pages with charts and metrics
+
+## Performance and scale
+
+The current repository is designed as a local research demo and performs
+inference on a single machine. It is not presented as a production clinical
+decision system or a benchmark against commercial discovery platforms.
+
+### Verified application performance
+
+The application was smoke-tested in the included environment with the Flask
+test client:
+
+- The application imports successfully.
+- The homepage returns HTTP `200`.
+- The medicine-use, side-effect, repurposing, search, clustering, and model
+  evaluation pages return HTTP `200`.
+- The search engine loads **11,498 medicines** and **3,079 drugs** from the
+  processed datasets.
+- Python compilation checks pass for the application and source packages.
+
+These checks verify that the application is operational; they are not accuracy
+benchmarks.
+
+### What affects speed
+
+- **First startup:** TensorFlow and the serialized models can take time to
+  initialize.
+- **First translation request:** the English-to-French translation model may
+  download and cache on first use.
+- **Model loading:** prediction models are cached after loading to avoid
+  repeatedly deserializing them.
+- **Dataset search:** the search engine loads processed CSV files into memory
+  for fast lookup and fuzzy matching.
+- **Hardware:** CPU, available memory, disk speed, and Python package versions
+  affect startup and prediction latency.
+
+For a larger deployment, the next performance improvements would be model
+preloading, background jobs for expensive evaluation tasks, request-level
+timeouts, a production WSGI server, a database-backed search index, and
+measurement with a representative benchmark dataset.
 
 ## Results and visualizations
 
