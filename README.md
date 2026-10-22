@@ -144,6 +144,31 @@ produced during model development. These images are included in the project so
 the results can be reviewed directly from GitHub without first running the
 application.
 
+## Application screenshots
+
+These screenshots show the application working with example inputs. The
+Medicine Use page returns a candidate therapeutic use, while the Side-Effect
+page returns a candidate side-effect prediction.
+
+### Medicine use prediction
+
+![Medicine use prediction page](docs/screenshots/medicine-use-prediction.png)
+
+*Example input:* `test1` with a combination of aceclofenac, paracetamol, and
+serratiopeptidase. The displayed result is a model-generated candidate use.
+
+### Side-effect prediction
+
+![Side-effect prediction page](docs/screenshots/side-effect-prediction.png)
+
+*Example input:* the same medicine combination with `pain relief` entered as a
+known use. The displayed result is a model-generated candidate side effect.
+
+These are illustrative examples, not clinical test cases. The exact output
+depends on the trained model, preprocessing, input text, and prediction
+settings. Additional screenshots can be added to
+[`docs/screenshots/`](docs/screenshots/) as the interface evolves.
+
 ### Model evaluation progress
 
 The evaluation figures show training/evaluation progress for the neural-network
