@@ -1,8 +1,25 @@
 # Medicine Prediction & Drug Repurposing
 
-An educational Flask application that combines machine-learning models with
-medicine and drug datasets to explore therapeutic uses, potential side effects,
-drug repurposing hypotheses, fuzzy search, and molecular clustering.
+## Project preview
+
+Medicine Prediction & Drug Repurposing is a full-stack machine-learning
+research application for exploring how medicines, chemical properties, and
+drug-use data can support early-stage discovery workflows. It provides one
+web interface for prediction, search, clustering, and model evaluation instead
+of requiring users to run separate notebooks or scripts.
+
+The project brings together three trained prediction systems:
+
+1. **Medicine Use Predictor** — estimates likely therapeutic uses from a
+   medicine name and composition.
+2. **Medicine Side-Effect Predictor** — estimates possible side effects from
+   medicine information and known uses.
+3. **Drug Repurposing Predictor** — ranks possible new therapeutic applications
+   using drug names, SMILES structures, and molecular descriptors.
+
+Alongside prediction, the application includes fuzzy search, medicine-to-drug
+relationships, molecular clustering, and evaluation pages with reusable
+figures generated from the project datasets.
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-3.x-000000?logo=flask&logoColor=white)
@@ -16,7 +33,19 @@ drug repurposing hypotheses, fuzzy search, and molecular clustering.
 > Never use the application to make healthcare decisions without a qualified
 > healthcare professional.
 
-## What the app does
+## Core capabilities
+
+### Three machine-learning models
+
+| Model | Inputs | Output |
+|---|---|---|
+| **Medicine Use Predictor** | Medicine name and composition | Candidate therapeutic uses |
+| **Medicine Side-Effect Predictor** | Medicine name, composition, and uses | Candidate side effects |
+| **Drug Repurposing Predictor** | Drug name, SMILES, and molecular features | Candidate alternative uses |
+
+The serialized model artifacts are stored in [`models/`](models/), while the
+model implementations and training-related code are organized under
+[`src/models/`](src/models/).
 
 ### Medicine use prediction
 
@@ -42,24 +71,40 @@ repurposing model returns possible alternative therapeutic applications.
 - Molecular-property clustering
 - Model evaluation pages with charts and metrics
 
-## Preview
+## Results and visualizations
 
-The interface uses a warm, low-contrast visual theme designed for comfortable
-reading during data exploration.
+The repository includes evaluation figures and exploratory visualizations
+produced during model development. These images are included in the project so
+the results can be reviewed directly from GitHub without first running the
+application.
 
-![Model evaluation progress](results/figures/model_evaluation_progress_nn.png)
+### Model evaluation progress
 
-The repository also includes the generated exploratory visualizations:
+The evaluation figures show training/evaluation progress for the neural-network
+experiments and side-effect model:
+
+| Medicine-use model | Drug-repurposing model |
+|---|---|
+| ![Medicine-use model evaluation](results/figures/model_evaluation_progress_nn.png) | ![Drug-repurposing model evaluation](results/figures/model_evaluation_progress_nn1.png) |
+
+| Side-effect model |
+|---|
+| ![Side-effect model evaluation](results/figures/side_effect_model_evaluation_progress_nn.png) |
+
+### Exploratory data analysis
 
 | Drug relationships | Medicine side effects |
 |---|---|
-| ![Drug scatter](src/visualization/drug_colony_scatter.png) | ![Side-effect groups](src/visualization/medicine_side_effects_group_scatter.png) |
+| ![Drug relationships](src/visualization/drug_colony_scatter.png) | ![Medicine side-effect groups](src/visualization/medicine_side_effects_group_scatter.png) |
 
 | Drug counts | Medicine-use groups |
 |---|---|
 | ![Drug counts](src/visualization/drug_colony_counts.png) | ![Medicine-use groups](src/visualization/medicine_uses_group_scatter.png) |
 
-## Understanding the results
+Additional generated figures are available in [`results/figures/`](results/figures/)
+and [`src/visualization/`](src/visualization/).
+
+### How to interpret the results
 
 The app displays model outputs as candidate labels or ranked predictions. A
 prediction means that the model found a pattern similar to examples in its
@@ -74,12 +119,12 @@ The evaluation pages expose common classification metrics:
 - **F1 score:** balance between precision and recall.
 - **Hamming loss:** average label-wise prediction error for multi-label tasks.
 
-The included charts show training/evaluation progress and exploratory
-relationships in the available datasets. Results can change when the training
-data, preprocessing, model versions, or thresholds change. Always inspect the
-dataset and metric definitions before drawing conclusions.
+The figures are development results, not clinical benchmarks. Exact outputs can
+change with preprocessing, model versions, thresholds, and input data. The
+repository intentionally does not present these experiments as medical
+validation.
 
-## Architecture
+## Application architecture
 
 ```text
 Browser
@@ -87,8 +132,8 @@ Browser
   v
 Flask application (app/app.py)
   |-- Jinja templates, CSS, JavaScript
-  |-- prediction routes
-  |-- search and clustering routes
+  |-- prediction routes for three models
+  |-- search, clustering, and evaluation routes
   v
 Serialized models (models/)
 Processed datasets (data/processed/)
@@ -123,8 +168,8 @@ requirements.txt               # Python dependencies
 ### 1. Clone the repository
 
 ```powershell
-git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
-cd YOUR_REPOSITORY
+git clone https://github.com/K4ROUI/Medicine-Prediction-Drug-Repurposing.git
+cd Medicine-Prediction-Drug-Repurposing
 ```
 
 ### 2. Create a virtual environment
